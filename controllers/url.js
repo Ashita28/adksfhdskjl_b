@@ -1,6 +1,5 @@
 const URL = require("../models/url");
 const urlAnalytics = require("../models/analytics");
-// const useragent = require("useragent");
 const User = require("../models/userSchema");
 const crypto = require("crypto");
 const { UAParser } = require("ua-parser-js");
@@ -8,7 +7,7 @@ const useragent = require("user-agent");
 
 const BASE_URL = "https://adksfhdskjl-b.onrender.com";
 
-// Generate short URL and short Id
+
 exports.shortUrlHandler = async (req, res) => {
   try {
     const { originalUrl, remark, expiryDate } = req.body;
@@ -45,12 +44,10 @@ exports.shortUrlHandler = async (req, res) => {
       let ipAddress =
         req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
-      // Extract the first IP from x-forwarded-for if present
       if (ipAddress && typeof ipAddress === "string") {
         ipAddress = ipAddress.split(",")[0].trim();
       }
 
-      // Remove IPv6 prefix (::ffff:) if present
       if (ipAddress.startsWith("::ffff:")) {
         ipAddress = ipAddress.replace("::ffff:", "");
       }
@@ -58,7 +55,6 @@ exports.shortUrlHandler = async (req, res) => {
       return ipAddress;
     };
 
-    // Usage
     const ipAddress = getClientIp(req);
     console.log("Client's IP Address:", ipAddress);
 
@@ -91,7 +87,6 @@ exports.shortUrlHandler = async (req, res) => {
   }
 };
 
-// GET ALL URL
 exports.getAllUrls = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -277,7 +272,6 @@ exports.getCount = async (req, res) => {
       return res.status(200).json({});
     }
 
-    // Initialize device counts for desktop, mobile, and tablet
     const deviceCounts = {
       desktop: 0,
       mobile: 0,
@@ -286,7 +280,6 @@ exports.getCount = async (req, res) => {
 
     const dateWiseClicks = {};
 
-    // Function to format the date for visit history
     const formatDate = (dateStr) => {
       const date = new Date(dateStr);
       const day = String(date.getDate()).padStart(2, "0");
@@ -295,11 +288,9 @@ exports.getCount = async (req, res) => {
       return `${day}-${month}-${year}`;
     };
 
-    // Loop through the URLs and accumulate counts based on deviceType
     results.forEach((doc) => {
       const deviceType = doc.deviceType;
 
-      // Loop through the visit history to accumulate counts
       doc.visitHistory.forEach((visit) => {
         const visitDate = formatDate(visit.timestamp);
 
@@ -336,7 +327,6 @@ exports.getCount = async (req, res) => {
 
     const allVisitHistory = results.flatMap((doc) => doc.visitHistory);
 
-    // Convert deviceCounts object to an array format and include all device counts
     const deviceCountArray = Object.entries(deviceCounts).map(
       ([name, count]) => ({
         name: name.charAt(0).toUpperCase() + name.slice(1),
@@ -360,7 +350,6 @@ exports.getCount = async (req, res) => {
   }
 };
 
-// GET ANALYTICS OF VISITED LINKS
 exports.getAnalytics = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -371,7 +360,6 @@ exports.getAnalytics = async (req, res) => {
       });
     }
 
-    // Find user by ID
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
